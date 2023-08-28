@@ -1,10 +1,13 @@
-with open(r'berries/garden1.txt', 'r') as file:
+# using files
+""" with open(r'berries/garden1.txt', 'r') as file: # will only work if you run code class4/homework directory
     berries_amounts = file.readline().split()
 
 for i, val in enumerate(berries_amounts):
     if val.isdigit():
-        berries_amounts[i] = int(val)
-
+        berries_amounts[i] = int(val) """
+        
+# OR without using files:
+berries_amounts = [1, 2, 3, 4]
 max_berries = 0 # or berries_amounts[0]
 
 for i, val in enumerate(berries_amounts):
