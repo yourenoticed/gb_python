@@ -8,7 +8,7 @@ for i, val in enumerate(berries_amounts):
         
 # OR without using files:
 berries_amounts = [1, 2, 3, 4]
-max_berries = 0 # or berries_amounts[0]
+max_berries = berries_amounts[0]
 
 for i, val in enumerate(berries_amounts):
     curr_berries = berries_amounts[(i - 1)] + val + berries_amounts[(i + 1) % len(berries_amounts)]
