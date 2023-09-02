@@ -1,6 +1,6 @@
 def sum(a: int, b: int):
-    if b == 1:
-        return 1
-    return a + sum(a, b - 1)
+    if b == 0:
+        return a
+    return sum(a + 1, b - 1)
 
-print(sum(2, 5))
+print(sum(7, 5))
