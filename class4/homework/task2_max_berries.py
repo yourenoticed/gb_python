@@ -1,5 +1,5 @@
 # using files
-""" with open(r'berries/garden1.txt', 'r') as file: # will only work if you run code class4/homework directory
+""" with open(r'berries/garden1.txt', 'r') as file: # will only work if you run code in class4/homework directory
     berries_amounts = file.readline().split()
 
 for i, val in enumerate(berries_amounts):
