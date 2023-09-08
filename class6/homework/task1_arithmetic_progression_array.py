@@ -36,4 +36,4 @@ def main():
     print(*user_list)
     return
 
-main()
+main_any_numbers()

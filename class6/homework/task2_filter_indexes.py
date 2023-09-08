@@ -10,10 +10,7 @@ def filter_indexes(arr: list, range_start, range_end) -> list[int]:
 
 def main():
     amount = num.input_positive_int("Enter amount of values you want to input")
-    array = list()
-    
-    for _ in range(amount):
-        array.append(num.input_any_number("Enter a value"))    
+    array = [num.input_any_number("Enter a value") for _ in range(amount)]  
     
     start = num.input_any_number("\nEnter filter start range")
     end = num.input_any_number("Enter filter end range")
