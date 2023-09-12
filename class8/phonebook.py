@@ -26,7 +26,7 @@ class Phonebook():
         self.print_phonebook()
         running = True
         while running:
-            action = input("Menu: print, search, add, edit, exit\n").lower()
+            action = input("Menu: print, search, add, edit, delete, exit\n").lower()
             if action == "print":
                 self.print_phonebook()
                 
@@ -41,6 +41,9 @@ class Phonebook():
                     self.edit_contact()
                 except Exception as e:
                     print(e)
+            
+            elif action == "delete":
+                self.delete_contact()
                 
             elif action == "exit":
                 running = False
@@ -90,32 +93,48 @@ class Phonebook():
             return search_result[0]
         else:
             return -1
-            
+    
+    def delete_contact(self):
+        contact_index = self.search_single_person()
+        if contact_index == -1:
+            raise Exception("Can't find such contact")
+        self.book.pop(contact_index)
+        self.edit_file()     
+    
     def edit_contact(self):
         contact_index = self.search_single_person()
         if contact_index == -1:
             raise Exception("Can't find such contact")
+        
         print()
+        
         editing = True
         while editing:
             print(self.book[contact_index].get_properties() + "\n")
             print("What do you want to change?")
+            
             edit_part = input("Options: first name, second name, middle name, number, exit\n").lower()
+            
             if edit_part == "first name":
                 edit = input(f"\nEditing {self.book[contact_index].first_name} to ")
                 self.book[contact_index].first_name = edit
+                
             elif edit_part == "second name":
                 edit = input(f"\nEditing {self.book[contact_index].second_name} to ")
                 self.book[contact_index].second_name = edit
+                
             elif edit_part == "middle name":
                 edit = input(f"\nEditing {self.book[contact_index].middle_name} to ")
                 self.book[contact_index].middle_name = edit
+                
             elif edit_part == "number":
                 edit = input(f"\nEditing {self.book[contact_index].phone_number} to ")
                 self.book[contact_index].phone_number = edit
+                
             elif edit_part == "exit":
                 editing = False
                 self.edit_file()
+                
             else:
                 print("Enter a valid parameter")  
         
