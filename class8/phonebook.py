@@ -196,8 +196,7 @@ class Phonebook():
                 middle_name = contact_info[-2]
                 second_name = " ".join([word for word in contact_info[1:-2]])    
             return (first_name, second_name, middle_name, phone_number)
-                
-                
+                             
     def initialize_phonebook(self, file_path: str):
         try:
             with open(file_path, 'r') as file:
