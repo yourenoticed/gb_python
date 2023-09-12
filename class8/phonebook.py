@@ -66,8 +66,11 @@ class Phonebook():
     
     def edit_file(self):
         with open(self.file_path, "w") as editor:
-            for person in self.book:
-                editor.write(person.get_contact_info() + "\n")
+            for i, person in enumerate(self.book):
+                if i < len(self.book) - 1:
+                    editor.write(person.get_contact_info() + "\n")
+                else:
+                    editor.write(person.get_contact_info())
     
     def print_search_result(self, result: list[int]):
         count = 1
@@ -98,9 +101,16 @@ class Phonebook():
         contact_index = self.search_single_person()
         if contact_index == -1:
             raise Exception("Can't find such contact")
-        self.book.pop(contact_index)
-        self.edit_file()     
-    
+        deleting = True
+        while deleting:
+            action = input("Are you sure you want to delete this contact?\n").lower()
+            if action in ["y", "yes"]:
+                self.book.pop(contact_index)
+                self.edit_file() 
+                deleting = False
+            elif action in ["n", "no"]:
+                deleting = False
+            
     def edit_contact(self):
         contact_index = self.search_single_person()
         if contact_index == -1:
@@ -165,11 +175,11 @@ class Phonebook():
             middle_name = None
             
         self.book.append(Person(first_name, second_name, middle_name, phone_number))
-        self.append_output(-1)
+        self.append_output()
         
-    def append_output(self, contact_index):
+    def append_output(self):
         with open(self.file_path, 'a') as writer:
-            writer.write(f"\n{self.book[contact_index].get_contact_info()}")
+            writer.write(f"\n{self.book[-1].get_contact_info()}")
     
     def clean_contact_info(self, infos: list[str]):
         for i, val in enumerate(infos):
