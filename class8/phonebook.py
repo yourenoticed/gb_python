@@ -1,11 +1,27 @@
 class Phonebook():
     book = list()
-    def __init__(self):
-        self.main()
+    file_path = str()
     
+    def __init__(self):
+        self.intro()
+        self.main()
+        
+    def intro(self):
+        print("Do you want to create a new phonebook or use an existing one?")
+        choice = input("Options: new, existing, exit\n").lower()
+        if choice == "existing":
+            self.file_path = input("Enter path to file: ")
+            try:
+                with open(self.file_path, "r"):
+                    return
+                    
+            except Exception:
+                print("Couldn't find a file under this file path. We created a new one for you")
+                with open(self.file_path, "w"):
+                    return
+                
     def main(self):
-        file_path = input("Enter path to file: ")
-        self.initialize_phonebook(file_path)
+        self.initialize_phonebook(self.file_path)
         print()
         self.print_phonebook()
         running = True
@@ -23,7 +39,8 @@ class Phonebook():
             elif action == "edit":
                 try: 
                     self.edit_contact()
-                except Exception as e: print(e)
+                except Exception as e:
+                    print(e)
                 
             elif action == "exit":
                 running = False
@@ -37,12 +54,17 @@ class Phonebook():
         criteria = input("Input prompt: ")
         print()
         for i, person in enumerate(self.book):
-            if criteria in [person.first_name, person.second_name, person.middle_name]:
+            if person.contains(criteria):
                 response.append(i)
                 print(f"{person}\n")
         if len(response) == 0:
             print("No contact was found")
         return response
+    
+    def edit_file(self):
+        with open(self.file_path, "w") as editor:
+            for person in self.book:
+                editor.write(person.get_contact_info() + "\n")
     
     def print_search_result(self, result: list[int]):
         count = 1
@@ -53,9 +75,17 @@ class Phonebook():
     def search_single_person(self) -> int:
         search_result = self.search()
         if len(search_result) > 1:
-            self.print_search_result(search_result)
-            choice = self.__input_number__("Enter an edited contact index")
+            finding_user = True
+            choice = int()
+            while finding_user:
+                self.print_search_result(search_result)
+                choice = self.__input_number__("Enter an edited contact index")
+                if choice <= len(search_result):
+                    finding_user = False
+                else: 
+                    print("Wrong index")
             return search_result[choice - 1]
+                    
         elif len(search_result) == 1:
             return search_result[0]
         else:
@@ -65,8 +95,10 @@ class Phonebook():
         contact_index = self.search_single_person()
         if contact_index == -1:
             raise Exception("Can't find such contact")
+        print()
         editing = True
         while editing:
+            print(self.book[contact_index].get_properties() + "\n")
             print("What do you want to change?")
             edit_part = input("Options: first name, second name, middle name, number, exit\n").lower()
             if edit_part == "first name":
@@ -83,6 +115,7 @@ class Phonebook():
                 self.book[contact_index].phone_number = edit
             elif edit_part == "exit":
                 editing = False
+                self.edit_file()
             else:
                 print("Enter a valid parameter")  
         
@@ -113,10 +146,11 @@ class Phonebook():
             middle_name = None
             
         self.book.append(Person(first_name, second_name, middle_name, phone_number))
-        self.append_output(self.book[-1])
+        self.append_output(-1)
         
     def append_output(self, contact_index):
-        pass
+        with open(self.file_path, 'a') as writer:
+            writer.write(f"\n{self.book[contact_index].get_contact_info()}")
     
     def clean_contact_info(self, infos: list[str]):
         for i, val in enumerate(infos):
@@ -165,6 +199,21 @@ class Person():
     
     def __str__(self):
         return self.get_contact_info()
+    
+    def contains(self, sought: str) -> bool:
+        if (sought in self.get_full_name()):
+            return True
+        return False
+    
+    def get_properties(self) -> str:
+        properties = str()
+        properties += f"First name: {self.first_name}\n"
+        if self.second_name is not None:
+            properties += f"Second name: {self.second_name}\n"
+        if self.middle_name is not None:
+            properties += f"Middle name: {self.middle_name}\n"
+        properties += f"Phone number: {self.phone_number}"
+        return properties    
     
     def get_full_name(self) -> str:
         if self.second_name is not None and self.middle_name is not None:
