@@ -17,11 +17,12 @@ class Phonebook():
                     
             except Exception:
                 print("Couldn't find a file under this file path. We created a new one for you")
-                with open(self.file_path, "w"):
+                with open(self.file_path, "x"):
                     return
+                    
         else:
             self.file_path = (input("Enter path to file: "))
-            with open(self.file_path, "w"):
+            with open(self.file_path, "x"):
                 return
          
     def main(self):
@@ -179,7 +180,8 @@ class Phonebook():
             middle_name = None
             
         self.book.append(Person(first_name, second_name, middle_name, phone_number))
-        self.append_output()
+        if len(self.book) <= 1: self.edit_file()
+        else: self.append_output()
         
     def append_output(self):
         with open(self.file_path, 'a') as writer:
