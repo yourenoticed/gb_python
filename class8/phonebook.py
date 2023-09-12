@@ -8,7 +8,7 @@ class Phonebook():
         
     def intro(self):
         print("Do you want to create a new phonebook or use an existing one?")
-        choice = input("Options: new, existing, exit\n").lower()
+        choice = input("Options: new, existing\n").lower()
         if choice == "existing":
             self.file_path = input("Enter path to file: ")
             try:
@@ -19,7 +19,11 @@ class Phonebook():
                 print("Couldn't find a file under this file path. We created a new one for you")
                 with open(self.file_path, "w"):
                     return
-                
+        else:
+            self.file_path = (input("Enter path to file: "))
+            with open(self.file_path, "w"):
+                return
+         
     def main(self):
         self.initialize_phonebook(self.file_path)
         print()
