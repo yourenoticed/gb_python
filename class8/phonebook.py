@@ -1,60 +1,8 @@
 class Phonebook():
-    book = list()
-    file_path = str()
-    
-    def __init__(self):
-        self.intro()
-        self.main()
-        
-    def intro(self):
-        print("Do you want to create a new phonebook or use an existing one?")
-        choice = input("Options: new, existing\n").lower()
-        if choice == "existing":
-            self.file_path = input("Enter path to file: ")
-            try:
-                with open(self.file_path, "r"):
-                    return
-                    
-            except Exception:
-                print("Couldn't find a file under this file path. We created a new one for you")
-                with open(self.file_path, "x"):
-                    return
-                    
-        else:
-            self.file_path = (input("Enter path to file: "))
-            with open(self.file_path, "x"):
-                return
-         
-    def main(self):
+    def __init__(self, file_path: str):
+        self.book = list()
+        self.file_path = file_path
         self.initialize_phonebook(self.file_path)
-        print()
-        self.print_phonebook()
-        running = True
-        while running:
-            action = input("Menu: print, search, add, edit, delete, exit\n").lower()
-            if action == "print":
-                self.print_phonebook()
-                
-            elif action == "search":
-                self.search()
-                
-            elif action == "add":
-                self.add_contact()
-                
-            elif action == "edit":
-                try: 
-                    self.edit_contact()
-                except Exception as e:
-                    print(e)
-            
-            elif action == "delete":
-                self.delete_contact()
-                
-            elif action == "exit":
-                running = False
-                
-            else:
-                print("Enter a proper action")
     
     def search(self) -> list[int]:
         response = list()
@@ -214,15 +162,12 @@ class Phonebook():
             return (first_name, second_name, middle_name, phone_number)
                              
     def initialize_phonebook(self, file_path: str):
-        try:
-            with open(file_path, 'r') as file:
-                lines = file.readlines()
-                for i in range(0, len(lines),2):
-                    first_name, second_name, middle_name, phone_number = self.get_contact_info(f"{''.join(lines[i])}{lines[i + 1]}")
-                    self.book.append(Person(first_name, second_name, middle_name, phone_number))
-        except(FileNotFoundError):
-            print("Fuck you, wrong path")
-
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+            for i in range(0, len(lines),2):
+                first_name, second_name, middle_name, phone_number = self.get_contact_info(f"{''.join(lines[i])}{lines[i + 1]}")
+                self.book.append(Person(first_name, second_name, middle_name, phone_number))
+        
 
 class Person():
     def __init__(self, first_name: str, second_name: str | None, middle_name: str | None, phone_number: str):
@@ -260,5 +205,62 @@ class Person():
     
     def get_contact_info(self) -> str:
         return f"{self.get_full_name()}\n {self.phone_number}"
-    
-Phonebook()
+
+
+class App():
+    def run(self):
+        self.intro()
+        self.phonebook = Phonebook(self.file_path)
+        self.main()
+
+    def intro(self):
+        print("Do you want to create a new phonebook or use an existing one?")
+        choice = input("Options: new, existing\n").lower()
+        if choice == "existing":
+            self.file_path = input("Enter path to file: ")
+            try:
+                with open(self.file_path, "r"):
+                    return
+                    
+            except Exception:
+                print("Couldn't find a file under this file path. We created a new one for you")
+                with open(self.file_path, "x"):
+                    return
+                    
+        else:
+            self.file_path = (input("Enter path to file: "))
+            with open(self.file_path, "x"):
+                return
+            
+    def main(self):
+        print()
+        self.phonebook.print_phonebook()
+        running = True
+        while running:
+            action = input("Menu: print, search, add, edit, delete, exit\n").lower()
+            if action == "print":
+                self.phonebook.print_phonebook()
+                
+            elif action == "search":
+                self.phonebook.search()
+                
+            elif action == "add":
+                self.phonebook.add_contact()
+                
+            elif action == "edit":
+                try: 
+                    self.phonebook.edit_contact()
+                except Exception as e:
+                    print(e)
+            
+            elif action == "delete":
+                self.phonebook.delete_contact()
+                
+            elif action == "exit":
+                running = False
+                
+            else:
+                print("Enter a proper action")
+                
+app = App()
+app.run()
