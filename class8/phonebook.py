@@ -1,18 +1,16 @@
+from person import Person
 class Phonebook():
     def __init__(self, file_path: str):
         self.book = list()
         self.file_path = file_path
-        self.initialize_phonebook(self.file_path)
+        self.initialize_phonebook()
     
-    def search(self) -> list[int]:
+    def search(self, prompt: str) -> list[int]:
         response = list()
-        print("Searching")
-        criteria = input("Input prompt: ")
-        print()
         for i, person in enumerate(self.book):
-            if person.contains(criteria):
+            if person.contains(prompt):
                 response.append(i)
-                print(f"{person}\n")
+                print(f"{person.get_properties()}\n")
         if len(response) == 0:
             print("No contact was found")
         return response
@@ -31,8 +29,8 @@ class Phonebook():
             print(f"{count}. {self.book[search_index]}")
             count += 1
         
-    def search_single_person(self) -> int:
-        search_result = self.search()
+    def search_single_person(self, search_prompt: str) -> int:
+        search_result = self.search(search_prompt)
         if len(search_result) > 1:
             finding_user = True
             choice = int()
@@ -50,13 +48,13 @@ class Phonebook():
         else:
             return -1
     
-    def delete_contact(self):
-        contact_index = self.search_single_person()
+    def delete_contact(self, search_prompt: str):
+        contact_index = self.search_single_person(search_prompt)
         if contact_index == -1:
             raise Exception("Can't find such contact")
         deleting = True
         while deleting:
-            action = input("Are you sure you want to delete this contact?\n").lower()
+            action = input("Are you sure you want to delete this contact? y\\n\n").lower()
             if action in ["y", "yes"]:
                 self.book.pop(contact_index)
                 self.edit_file() 
@@ -64,8 +62,8 @@ class Phonebook():
             elif action in ["n", "no"]:
                 deleting = False
             
-    def edit_contact(self):
-        contact_index = self.search_single_person()
+    def edit_contact(self, search_prompt: str):
+        contact_index = self.search_single_person(search_prompt)
         if contact_index == -1:
             raise Exception("Can't find such contact")
         
@@ -161,106 +159,9 @@ class Phonebook():
                 second_name = " ".join([word for word in contact_info[1:-2]])    
             return (first_name, second_name, middle_name, phone_number)
                              
-    def initialize_phonebook(self, file_path: str):
-        with open(file_path, 'r') as file:
+    def initialize_phonebook(self):
+        with open(self.file_path, 'r') as file:
             lines = file.readlines()
             for i in range(0, len(lines),2):
                 first_name, second_name, middle_name, phone_number = self.get_contact_info(f"{''.join(lines[i])}{lines[i + 1]}")
                 self.book.append(Person(first_name, second_name, middle_name, phone_number))
-        
-
-class Person():
-    def __init__(self, first_name: str, second_name: str | None, middle_name: str | None, phone_number: str):
-        self.first_name = first_name
-        self.second_name = second_name
-        self.middle_name = middle_name
-        self.phone_number = phone_number
-    
-    def __str__(self):
-        return self.get_contact_info()
-    
-    def contains(self, sought: str) -> bool:
-        if (sought in self.get_full_name()):
-            return True
-        return False
-    
-    def get_properties(self) -> str:
-        properties = str()
-        properties += f"First name: {self.first_name}\n"
-        if self.second_name is not None:
-            properties += f"Second name: {self.second_name}\n"
-        if self.middle_name is not None:
-            properties += f"Middle name: {self.middle_name}\n"
-        properties += f"Phone number: {self.phone_number}"
-        return properties    
-    
-    def get_full_name(self) -> str:
-        if self.second_name is not None and self.middle_name is not None:
-            return f"{self.first_name} {self.second_name} {self.middle_name}"
-        elif self.middle_name is not None:
-            return f"{self.first_name} {self.middle_name}"
-        elif self.second_name is not None:
-            return f"{self.first_name} {self.second_name}"
-        return self.first_name
-    
-    def get_contact_info(self) -> str:
-        return f"{self.get_full_name()}\n {self.phone_number}"
-
-
-class App():
-    def run(self):
-        self.intro()
-        self.phonebook = Phonebook(self.file_path)
-        self.main()
-
-    def intro(self):
-        print("Do you want to create a new phonebook or use an existing one?")
-        choice = input("Options: new, existing\n").lower()
-        if choice == "existing":
-            self.file_path = input("Enter path to file: ")
-            try:
-                with open(self.file_path, "r"):
-                    return
-                    
-            except Exception:
-                print("Couldn't find a file under this file path. We created a new one for you")
-                with open(self.file_path, "x"):
-                    return
-                    
-        else:
-            self.file_path = (input("Enter path to file: "))
-            with open(self.file_path, "x"):
-                return
-            
-    def main(self):
-        print()
-        self.phonebook.print_phonebook()
-        running = True
-        while running:
-            action = input("Menu: print, search, add, edit, delete, exit\n").lower()
-            if action == "print":
-                self.phonebook.print_phonebook()
-                
-            elif action == "search":
-                self.phonebook.search()
-                
-            elif action == "add":
-                self.phonebook.add_contact()
-                
-            elif action == "edit":
-                try: 
-                    self.phonebook.edit_contact()
-                except Exception as e:
-                    print(e)
-            
-            elif action == "delete":
-                self.phonebook.delete_contact()
-                
-            elif action == "exit":
-                running = False
-                
-            else:
-                print("Enter a proper action")
-                
-app = App()
-app.run()
